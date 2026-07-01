@@ -65,6 +65,7 @@ from furminder.handlers.settings import (
 )
 from furminder.handlers.start import help_handler, start_handler
 from furminder.services.reminders import process_due_reminders
+from furminder.telegram_client import build_telegram_request
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -81,10 +82,16 @@ async def reminder_job(context) -> None:
 def build_application() -> Application:
     settings = get_settings()
     db = Database.from_settings(settings)
+    telegram_request = build_telegram_request(settings)
+
+    if settings.telegram_proxy_url:
+        logger.info("Telegram proxy enabled: %s", settings.telegram_proxy_url.split("@")[-1])
 
     application = (
         Application.builder()
         .token(settings.bot_token)
+        .request(telegram_request)
+        .get_updates_request(telegram_request)
         .build()
     )
     application.bot_data["db"] = db

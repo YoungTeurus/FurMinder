@@ -18,6 +18,11 @@ class Settings:
     mongodb_replica_set: str | None = None
     mongodb_auth_source: str | None = None
     mongodb_tls_ca_file: str | None = None
+    telegram_proxy_url: str | None = None
+    telegram_connect_timeout: float = 30.0
+    telegram_read_timeout: float = 30.0
+    telegram_write_timeout: float = 30.0
+    telegram_pool_timeout: float = 10.0
     default_timezone: str = "Europe/Moscow"
     default_locale: str = "ru"
 
@@ -55,6 +60,12 @@ def get_settings() -> Settings:
     if mongodb_tls_ca_file and not Path(mongodb_tls_ca_file).is_file():
         raise RuntimeError(f"MONGODB_TLS_CA_FILE not found: {mongodb_tls_ca_file}")
 
+    telegram_proxy_url = os.environ.get("TELEGRAM_PROXY_URL", "").strip() or None
+    telegram_connect_timeout = float(os.environ.get("TELEGRAM_CONNECT_TIMEOUT", "30"))
+    telegram_read_timeout = float(os.environ.get("TELEGRAM_READ_TIMEOUT", "30"))
+    telegram_write_timeout = float(os.environ.get("TELEGRAM_WRITE_TIMEOUT", "30"))
+    telegram_pool_timeout = float(os.environ.get("TELEGRAM_POOL_TIMEOUT", "10"))
+
     return Settings(
         bot_token=bot_token,
         mongodb_db=mongodb_db,
@@ -65,4 +76,9 @@ def get_settings() -> Settings:
         mongodb_replica_set=mongodb_replica_set,
         mongodb_auth_source=mongodb_auth_source,
         mongodb_tls_ca_file=mongodb_tls_ca_file,
+        telegram_proxy_url=telegram_proxy_url,
+        telegram_connect_timeout=telegram_connect_timeout,
+        telegram_read_timeout=telegram_read_timeout,
+        telegram_write_timeout=telegram_write_timeout,
+        telegram_pool_timeout=telegram_pool_timeout,
     )
