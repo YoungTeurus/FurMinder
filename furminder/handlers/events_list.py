@@ -9,7 +9,7 @@ from furminder.db.repository import Database
 from furminder.i18n import t
 from furminder.services.date_parser import format_date_range
 from furminder.services.permissions import can_manage_event
-from furminder.services.recurrence import compute_occurrences_between
+from furminder.services.recurrence import compute_occurrences_between, recurrence_enabled
 from furminder.services.reminders import build_event_card
 
 
@@ -44,7 +44,7 @@ async def events_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     events = await db.list_upcoming_events(chat_id)
     visible = []
     for event in events:
-        if event.get("recurrence", {}).get("enabled"):
+        if recurrence_enabled(event.get("recurrence")):
             if _next_occurrence_start(event):
                 visible.append(event)
         else:
@@ -59,7 +59,7 @@ async def events_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     for event in visible[:20]:
         start = date.fromisoformat(event["start_date"])
         end = date.fromisoformat(event["end_date"]) if event.get("end_date") else None
-        if event.get("recurrence", {}).get("enabled"):
+        if recurrence_enabled(event.get("recurrence")):
             next_start = _next_occurrence_start(event)
             if next_start:
                 duration = (end - start).days if end and end > start else 0

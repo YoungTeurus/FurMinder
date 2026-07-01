@@ -1,0 +1,17 @@
+[Unit]
+Description=FurMinder Telegram Bot
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=teurus
+Group=teurus
+WorkingDirectory=/home/teurus/apps/FurMinder
+EnvironmentFile=/home/teurus/apps/FurMinder/.env
+ExecStart=/home/teurus/apps/FurMinder/.venv/bin/python bot.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

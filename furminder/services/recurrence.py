@@ -42,6 +42,10 @@ def _monthly_weekday_occurrence(
     return candidate if candidate.month == month else None
 
 
+def recurrence_enabled(recurrence: dict[str, Any] | None) -> bool:
+    return bool(recurrence and recurrence.get("enabled"))
+
+
 def compute_occurrences_between(
     *,
     anchor_start: date,
